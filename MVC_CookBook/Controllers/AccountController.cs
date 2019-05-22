@@ -17,15 +17,18 @@ namespace MVC_CookBook.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private ApplicationDbContext context;
 
         public AccountController()
         {
+            context = new ApplicationDbContext();
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            context = new ApplicationDbContext();
         }
 
         public ApplicationSignInManager SignInManager
@@ -139,7 +142,15 @@ namespace MVC_CookBook.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            return View();
+            var model = new RegisterViewModel
+            {
+                Birthday = DateTime.Today.AddYears(-100)
+            };
+
+            ViewBag.Roles = new SelectList(context.Roles.Where(r =>
+            !r.Name.Contains("UserPlus")).ToList(), "Name", "Name");
+
+            return View(model);
         }
 
         //
@@ -151,10 +162,39 @@ namespace MVC_CookBook.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var recent_Id = context.Users.Max(i => i.IId);
+
+                var user = new ApplicationUser
+                {
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Birthday = model.Birthday,
+                    DateCreated = model.DateCreated,
+                    IId = recent_Id + 1
+                };
+
+                /*
+                var hashIt = UserManager.PasswordHasher.HashPassword("mmmmmm");
+                var seed1 = new ApplicationUser
+                {
+                    UserName = "Seedname",
+                    FirstName = "Seedfirst",
+                    LastName = "Seedlast",
+                    Email = "Seedemail@email.com",
+                    Birthday = Convert.ToDateTime("5/01/1919 3:00:00 PM"),
+                    DateCreated = Convert.ToDateTime("5/19/2019 3:00:00 PM"),
+                    IId = 0,
+                    PasswordHash = hashIt
+                };
+                var createseed = await UserManager.CreateAsync(seed1);
+                */
                 var result = await UserManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
+                    await UserManager.AddToRoleAsync(user.Id, model.UserRoles);
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771

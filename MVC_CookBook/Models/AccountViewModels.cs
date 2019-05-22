@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace MVC_CookBook.Models
@@ -48,10 +49,15 @@ namespace MVC_CookBook.Models
 
     public class LoginViewModel
     {
+        /*
         [Required]
         [Display(Name = "Email")]
         [EmailAddress]
         public string Email { get; set; }
+        */
+        [Required]
+        [Display(Name = "Username")]
+        public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -79,6 +85,26 @@ namespace MVC_CookBook.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        [Display(Name = "Username")]
+        public string UserName { get; set; }
+
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+        [Display(Name = "Birthday")]
+        public DateTime Birthday { get; set; }
+
+        [Display(Name = "Date Created")]
+        public DateTime DateCreated { get; set; }
+
+        [Required]
+        [Display(Name = "UserRoles")]
+        public string UserRoles { get; set; }
     }
 
     public class ResetPasswordViewModel
