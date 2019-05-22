@@ -40,10 +40,7 @@ namespace MVC_CookBook.Models
 }
 
 /*
- * 
- * 
- * 
- * // Create Seeded Roles.
+ *      // Create Seeded Roles.
             context.Roles.AddOrUpdate(r => r.Id,
                 new IdentityRole { Name = "Admin" },
                 new IdentityRole { Name = "User" },
@@ -68,7 +65,5 @@ namespace MVC_CookBook.Models
                 manager.Create(user, hash);
                 manager.AddToRole(user.Id, "Developer");
             }
- * 
- * 
- * 
+ *
  */

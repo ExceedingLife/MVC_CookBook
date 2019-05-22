@@ -78,7 +78,7 @@ namespace MVC_CookBook.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -185,7 +185,7 @@ namespace MVC_CookBook.Controllers
                     Email = "Seedemail@email.com",
                     Birthday = Convert.ToDateTime("5/01/1919 3:00:00 PM"),
                     DateCreated = Convert.ToDateTime("5/19/2019 3:00:00 PM"),
-                    IId = 0,
+                    IId = 1,
                     PasswordHash = hashIt
                 };
                 var createseed = await UserManager.CreateAsync(seed1);
