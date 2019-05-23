@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MVC_CookBook.Models
 {
-    public class UserModels {    }
+    public class UserModels { }
 
     public class UserViewModel
     {
@@ -29,6 +29,7 @@ namespace MVC_CookBook.Models
         [Display(Name = "Date Created")]
         public DateTime DateCreated { get; set; }
 
+        [Display(Name = "User Role")]
+        public string UserRole { get; set; }
     }
-
 }

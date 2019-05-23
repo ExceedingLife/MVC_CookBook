@@ -58,7 +58,30 @@ namespace MVC_CookBook.Controllers
         [HttpGet]
         public ActionResult GetAllUsers()
         {
-            return View();
+            var userDetails = (from user in context.Users
+                               from userrole in user.Roles
+                               join role in context.Roles
+                               on userrole.RoleId
+                               equals role.Id
+                               select new UserViewModel()
+                               {
+                                   Id = user.IId,
+                                   Guid = user.Id,
+                                   FirstName = user.FirstName,
+                                   LastName = user.LastName,
+                                   Birthday = user.Birthday,
+                                   DateCreated = user.DateCreated,
+                                   Email = user.Email,
+                                   UserName = user.UserName,
+                                   UserRole = role.Name
+                               }).ToList();
+            if(userDetails == null)
+            {
+                return HttpNotFound();
+            }
+            return View(userDetails);
         }
+
+
     }
 }
