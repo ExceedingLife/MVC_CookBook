@@ -252,6 +252,8 @@
     <Content Include="Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Views\User\GetAllUsers.cshtml" />
     <Content Include="Views\Admin\Dashboard.cshtml" />
+    <Content Include="Views\Admin\ViewAllUsers.cshtml" />
+    <Content Include="Views\Admin\AdminCreateUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

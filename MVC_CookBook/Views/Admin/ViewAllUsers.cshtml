@@ -1,0 +1,97 @@
+﻿@model IEnumerable<MVC_CookBook.Models.AdminUserViewModel>
+
+@{
+    ViewBag.Title = "Admin User List";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success my-2">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Success: </strong> @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger my-2">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Error: </strong> @TempData["Error"]
+    </div>
+}
+
+    @*<p>
+        @Html.ActionLink("Create New", "Create")
+    </p>*@
+
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="panel">
+            <div class="panel-heading panel-default">
+                <h2>Administrator User List</h2>
+            </div>
+            <div class="panel-body">
+                <table class="table table-bordered table-hover table-striped table-responsive">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Id)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FullName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Birthday)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Email)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.UserName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.UserRole)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DateCreated)
+                        </th>
+                        <th>Actions</th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        @Html.HiddenFor(modelItem => item.Guid)
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FullName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Birthday)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserRole)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DateCreated)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                                @*@Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

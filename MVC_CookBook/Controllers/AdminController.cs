@@ -56,12 +56,81 @@ namespace MVC_CookBook.Controllers
             return View();
         }
 
+        // GET: Admin/ViewAllUsers/
         [HttpGet]
-        public Task<ActionResult> ViewAllUsers()
+        public async Task<ActionResult> ViewAllUsers()
         {
-
-            return View();
+            var userDetails = await 
+                              (from user in context.Users
+                               from userrole in user.Roles
+                               join role in context.Roles
+                               on userrole.RoleId
+                               equals role.Id
+                               select new AdminUserViewModel()
+                               {
+                                   Id = user.IId,
+                                   Guid = user.Id,
+                                   FirstName = user.FirstName,
+                                   LastName = user.LastName,
+                                   DateCreated = user.DateCreated,
+                                   Birthday = user.Birthday,
+                                   UserName = user.UserName,
+                                   Email = user.Email,
+                                   UserRole = role.Name
+                               }).ToListAsync();
+            if(userDetails == null)
+            {
+                return HttpNotFound();
+            }
+            return View(userDetails);
         }
+
+        //GET: Admin/CreateUser/
+        [HttpGet]
+        public async Task<ActionResult> AdminCreateUser()
+        {
+            var model = new RegisterViewModel()
+            {
+                Birthday = DateTime.Today.AddYears(-21)
+            };
+
+            ViewBag.Roles = new SelectList(await context.Roles.ToListAsync(), "Name", "Name");
+
+            return View(model);
+        }
+        //POST: Admin/CreateUser/{user}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> AdminCreateUser(RegisterViewModel registerViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var recent_Id = context.Users.Max(i => i.IId);
+
+                var user = new ApplicationUser
+                {
+                    FirstName = registerViewModel.FirstName,
+                    LastName = registerViewModel.LastName,
+                    Birthday = registerViewModel.Birthday,
+                    DateCreated = registerViewModel.DateCreated,
+                    Email = registerViewModel.Email,
+                    UserName = registerViewModel.UserName,
+                    IId = recent_Id + 1
+                };
+                var passHash = UserManager.PasswordHasher.HashPassword(registerViewModel.Password);
+                var result = await UserManager.CreateAsync(user, passHash);
+                TempData["Success"] = "User Created Successfully";
+                if (result.Succeeded)
+                {
+                    await UserManager.AddToRoleAsync(user.Id, registerViewModel.UserRoles);
+                }
+                return RedirectToAction("ViewAllUsers");
+            }
+            // If we got this far, something failed, redisplay form
+            return View(registerViewModel);
+        }
+
+        // GET: /User/Edit/{id}
 
     }
 }
