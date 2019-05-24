@@ -130,7 +130,44 @@ namespace MVC_CookBook.Controllers
             return View(registerViewModel);
         }
 
-        // GET: /User/Edit/{id}
+        // GET: /Admin/AdminEditUser/{id}
+        [HttpGet]
+        public async Task<ActionResult> AdminEditUser(string guid)
+        {
+            if(guid == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var user = await UserManager.FindByIdAsync(guid);
+            if(user == null)
+            {
+                return HttpNotFound();
+            }
+            var role = await UserManager.GetRolesAsync(user.Id);
+
+            var theUser = new AdminUserViewModel
+            {
+                Guid = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Email = user.Email,
+                Birthday = user.Birthday,
+                DateCreated = user.DateCreated,
+                UserRole = role.FirstOrDefault(),
+                Id = user.IId
+            };
+
+            return View(theUser);
+        }
+        // POST: /Admin/AdminEditUser/{model}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> AdminEditUser(AdminUserViewModel model)
+        {
+
+        }
 
     }
 }

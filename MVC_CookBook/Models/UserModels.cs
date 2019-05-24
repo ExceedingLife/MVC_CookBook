@@ -37,17 +37,22 @@ namespace MVC_CookBook.Models
     {
         [Display(Name = "User ID")]
         public int Id { get; set; }
+        [Display(Name = "ID")]
         public string Guid { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         [Display(Name = "Full Name")]
         public string FullName { get { return FirstName + " " + LastName; } }
+        [Required]
         [Display(Name = "Username")]
         public string UserName { get; set; }
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
         public DateTime Birthday { get; set; }
         [Display(Name = "Date Created")]
         public DateTime DateCreated { get; set; }
+        [Required]
         [Display(Name = "User Role")]
         public string UserRole { get; set; }
     }

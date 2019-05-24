@@ -28,7 +28,10 @@
     <div class="col-sm-12 col-md-12 col-lg-12">
         <div class="panel">
             <div class="panel-heading panel-default">
-                <h2>Administrator User List</h2>
+                <h3>Administrator User List</h3>
+                <br />
+                @Html.ActionLink("Create", "AdminCreateUser", "Admin", null, new { @class="btn btn-warning"})
+                <br />
             </div>
             <div class="panel-body">
                 <table class="table table-bordered table-hover table-striped table-responsive">
