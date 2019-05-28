@@ -52,6 +52,9 @@ namespace MVC_CookBook.Controllers
         [HttpGet]
         public ActionResult Dashboard()
         {
+            ViewBag.UsersCount = context.Users.Count();
+
+            ViewBag.RolesCount = context.Roles.Count();
 
             return View();
         }
@@ -164,10 +167,140 @@ namespace MVC_CookBook.Controllers
         // POST: /Admin/AdminEditUser/{model}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> AdminEditUser(AdminUserViewModel model)
+        public async Task<ActionResult> AdminEditUser([Bind]AdminUserViewModel model)
         {
+            if (ModelState.IsValid)
+            {
+                var user = await UserManager.FindByIdAsync(model.Guid);
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.Birthday = model.Birthday;
+                user.DateCreated = model.DateCreated;
+                user.UserName = model.UserName;
+                user.IId = model.Id;
 
+                var result = await UserManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    await context.SaveChangesAsync();
+                    TempData["Success"] = "User Updated Successfully";
+                    return RedirectToAction("ViewAllUsers");
+                }
+                else
+                {
+                    TempData["Error"] = "User Update Unsuccessful";
+                    return RedirectToAction("ViewAllUsers");
+                }
+            }
+            else
+            {
+                TempData["Error"] = "User Update Unsuccessful";
+                return RedirectToAction("ViewAllUsers");
+            }
         }
 
+        public async Task<ActionResult> AdminRoleManager()
+        { // Create Role DropDownList
+            GetRolesSelectList();
+            GetUsersSelectList();
+            GetUsersViewBag();
+
+            return await Task.Run(() => View());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> GetUserRole(string userId)
+        {
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                var user = await UserManager.FindByIdAsync(userId);
+                var role = await UserManager.GetRolesAsync(user.Id);
+
+                ViewBag.Roles4User = role;
+                TempData["Success"] = "Roles Retrieved Successfully";
+
+                GetRolesSelectList();
+                GetUsersSelectList();
+                GetUsersViewBag();
+
+                return View("AdminRoleManager");
+            }
+            else
+            {
+                TempData["Error"] = "Role Retrieval Unsuccessful";
+                return RedirectToAction("AdminRoleManager");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeUserRole(string userId, string role)
+        {
+            if (!string.IsNullOrWhiteSpace(userId) && !string.IsNullOrWhiteSpace(role))
+            {
+                var user = await UserManager.FindByIdAsync(userId);
+                var currentRole = await UserManager.GetRolesAsync(user.Id);
+                await UserManager.RemoveFromRoleAsync(user.Id, currentRole.FirstOrDefault());
+                await UserManager.AddToRoleAsync(user.Id, role);
+                TempData["Success"] = "Role Successfully Changed.";
+
+                GetRolesSelectList();
+                GetUsersSelectList();
+                GetUsersViewBag();
+
+                return View("AdminRoleManager");
+            }
+            else
+            {
+                TempData["Error"] = "Role Change Unsuccessful!";
+                return RedirectToAction("RoleManager");
+            }
+        }
+
+        public void GetUsersViewBag()
+        {
+            var userNrole = (from user in context.Users
+                             from role in user.Roles
+                             join r in context.Roles
+                             on role.RoleId
+                             equals r.Id
+                             orderby user.IId
+                             select new AdminUserViewModel()
+                             {
+                                 Guid = user.Id,
+                                 Id = user.IId,
+                                 FirstName = user.FirstName,
+                                 LastName = user.LastName,
+                                 UserName = user.UserName,
+                                 Email = user.Email,
+                                 Birthday = user.Birthday,
+                                 DateCreated = user.DateCreated,
+                                 UserRole = r.Name
+                             }).ToList();
+            ViewBag.UsersPlusRoles = userNrole;
+        }
+        public void GetRolesSelectList()
+        {
+            var roleList = context.Roles.ToList()
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Name,
+                    Text = r.Name
+                }).ToList();
+
+            ViewBag.Roles = roleList;
+        }
+        public void GetUsersSelectList()
+        {
+            var users = context.Users.ToList()
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id,
+                    Text = u.UserName
+                }).ToList();
+
+            ViewBag.UsersDDL = users;
+        }
     }
 }

@@ -1,0 +1,194 @@
+﻿@using MVC_CookBook.Models
+@model IEnumerable<MVC_CookBook.Models.AdminUserViewModel>
+@{
+    ViewBag.Title = "Admin RoleManager";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    List<AdminUserViewModel> UsersList = ViewBag.UsersPlusRoles as List<AdminUserViewModel>;
+}
+
+
+<div class="jumbotron text-center">
+    <h2><strong>Administrator Role Manager</strong></h2>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Success: </strong> @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Error: </strong> @TempData["Error"]
+    </div>
+}
+
+
+@*  Centering
+    <div class="row">
+        <div class="col-3 mx-auto">
+            <div class="text-center">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-3 text-center">
+*@
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <!--    COLUMN 1   -->
+        <div class="col-sm-5 col-md-5 col-lg-5">
+            <div class="panel panel-primary">
+                <div class="panel-heading text-center">
+                    <h4>Available Roles</h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped table-hover">
+                        @foreach (var role in ViewBag.Roles)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@role.Text</strong>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel panel-primary text-center">
+                <div class="panel-heading">
+                    <h4>Get Role for User</h4>
+                </div>
+                @using (Html.BeginForm("GetUserRole", "Admin"))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="panel-body">
+                        <div class="input-group">
+                            <span class="input-group-addon">Username</span>
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-user"></i>
+                            </span>
+                            @Html.DropDownList("userId",
+                             (IEnumerable<SelectListItem>)ViewBag.UsersDDL, "Select User",
+                             new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <input type="submit" value="Get Role" class="btn btn-info" />
+                    </div>
+                }
+                @if (ViewBag.Roles4User != null)
+                {
+                    <div class="alert alert-info"
+                         style="margin-left:2em; margin-right:2em;">
+                        <strong>Role for User</strong>
+                        <ol style="list-style: decimal inside;">
+                            @foreach (var r in ViewBag.Roles4User)
+                            {
+                                <li>@r</li>
+                            }
+                        </ol>
+                    </div>
+                }
+            </div>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Change User Role
+                </div>
+                @using (Html.BeginForm("ChangeUserRole", "Admin"))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="panel-body">
+                        @Html.DropDownList("userId",
+                         (IEnumerable<SelectListItem>)ViewBag.UsersDDL,
+                         "Select Username.",
+                         new { @class = "form-control" })
+
+                        @Html.DropDownList("role",
+                         (IEnumerable<SelectListItem>)ViewBag.Roles,
+                         "Select Role.",
+                         new { @class = "form-control" })
+                    </div>
+                    <div class="panel-footer">
+                        <input type="submit" value="Change Role" class="btn btn-info" />
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!--    COLUMN 2   -->
+        <div class="col-sm-5 col-md-5 col-lg-5">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4>Users with Role</h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Id)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.FullName)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.UserName)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.UserRole)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null)
+                            {
+                                foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(u => user.Id)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(u => user.FullName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(u => user.UserName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(u => user.UserRole)
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                foreach (var user in UsersList)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(u => user.Id)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(u => user.FullName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(u => user.UserName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(u => user.UserRole)
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
